@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+MimeType=image/*;
+Actions=OCR2Clipboard;
+
+[Desktop Action OCR2Clipboard]
+Name=Copy text from image
+Icon=image-x-generic
+Exec="$HOME/.local/bin/ocr2clipboard.sh" "%f"
