@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
+if ! command -v tesseract >/dev/null 2>&1; then
+    notify-send -a Dolphin -i image-x-generic "Copy text from image" "Can't find tesseract. Please install it first."
+fi
+
 # Configuration file path
 CONFIG_DIR="$HOME/.config/ocr2clipboard"
 CONFIG_FILE="$CONFIG_DIR/language"
-
-# Create config directory if it doesn't exist
-mkdir -p "$CONFIG_DIR"
 
 # Get language preference
 if [ -f "$CONFIG_FILE" ]; then
@@ -22,8 +23,9 @@ if [ $? -ne 0 ]; then
 else
     # Ask if user wants to save the setting
     if [ ! -s "$CONFIG_FILE" ]; then
-        if kdialog --yesno "Do you want to save the settings?\n\nBy saving it will store the selected value (${CURRENT_LANG}) as default\nuntil you delete the config file ${CONFIG_FILE}." --title "Save settings"; then
+        if kdialog --yesno "Do you want to save the settings?\n\nBy saving it will store the selected value (${SELECTED_LANG}) as default\nuntil you delete the config file ${CONFIG_FILE}." --title "Save settings"; then
             # User wants to save the setting
+            mkdir -p "$CONFIG_DIR"
             echo "$SELECTED_LANG" > "$CONFIG_FILE"
         fi
     fi
@@ -33,7 +35,7 @@ fi
 dbus-send --type=method_call --dest=org.kde.klipper /klipper org.kde.klipper.klipper.setClipboardContents string:"$(tesseract -l "$SELECTED_LANG" "$1" stdout)"
 
 if [ $? -eq 0 ]; then
-    notify-send -a Dolphin -i application-png "Copy text from image" "Text successfully copied to clipboard (Language: $SELECTED_LANG)"
+    notify-send -a Dolphin -i image-x-generic "Copy text from image" "Text successfully copied to clipboard (Language: $SELECTED_LANG)"
 else
-    notify-send -a Dolphin -i application-png "Copy text from image" "There was an error during text recognition."
+    notify-send -a Dolphin -i image-x-generic "Copy text from image" "There was an error during text recognition."
 fi
