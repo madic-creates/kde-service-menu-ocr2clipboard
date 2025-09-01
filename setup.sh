@@ -25,6 +25,19 @@ case "$1" in
         ;;
     -u)
         rm -fv "$BIN_DIR/ocr2clipboard.sh" "$SERVICE_MENU_DIR/ocr2clipboard.desktop"
+
+        # Ask if configuration should be removed
+        if [ -d "$HOME/.config/ocr2clipboard" ]; then
+            echo -n "Remove configuration directory '$HOME/.config/ocr2clipboard'? [y/N]: "
+            read -r response
+            if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
+                rm -rfv "$HOME/.config/ocr2clipboard"
+                echo "Configuration directory removed."
+            else
+                echo "Configuration directory kept."
+            fi
+        fi
+
         echo "Uninstallation successful."
         ;;
     *)
